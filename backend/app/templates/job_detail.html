@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}{{ job.title }} - HiLancer Job Details{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="mb-3">
+        <a href="{{ url_for('main.jobs_list') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+            <i class="bi bi-arrow-left me-1"></i> Back to Find Work Portal
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Job Info Column -->
+        <div class="col-lg-8">
+            <div class="p-4 p-md-5 hilancer-card mb-4 bg-surface">
+                <!-- Header -->
+                <div class="d-flex align-items-start gap-3 mb-4 pb-3 border-bottom">
+                    <img src="{{ job.company_logo or 'https://img.icons8.com/color/96/company.png' }}" alt="{{ job.company }}" class="rounded-3 shadow-sm p-2 border" style="width: 64px; height: 64px; object-fit: contain; background: #fff;">
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                            <div>
+                                <h3 class="fw-bold mb-1">{{ job.title }}</h3>
+                                <p class="text-muted mb-0">
+                                    <strong>{{ job.company }}</strong> &bull; 
+                                    <span>{{ job.industry }}</span> &bull; 
+                                    <i class="bi bi-geo-alt"></i> {{ job.location }} ({{ job.remote_onsite }})
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <h3 class="fw-bold text-success mb-0">{{ job.salary }}</h3>
+                                <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill">{{ job.job_type }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Structured Metadata Box -->
+                <div class="row g-3 p-3 bg-light rounded-3 mb-4 border">
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Experience:</small>
+                        <strong class="text-dark">{{ job.experience }}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Qualification:</small>
+                        <strong class="text-dark">{{ job.qualification or "B.Tech / B.E. / Any Graduate" }}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Posted Date:</small>
+                        <strong class="text-dark">{{ job.posted_date.strftime('%b %d, %Y') }}</strong>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <small class="text-muted d-block">Apply Deadline:</small>
+                        <strong class="text-danger">{{ job.last_date_to_apply or "15 Days Left" }}</strong>
+                    </div>
+                </div>
+
+                <!-- Required Skills Badges -->
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-tools text-primary me-2"></i>Required Skills</h5>
+                    <div>
+                        {% for skill in (job.skills or '').split(',') %}
+                            <span class="skill-tag fs-6 px-3 py-2 me-2 mb-2">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Responsibilities -->
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-list-check text-primary me-2"></i>Key Responsibilities</h5>
+                    <div class="p-3 bg-body-tertiary rounded-3 border">
+                        <p class="mb-0 text-dark leading-relaxed" style="white-space: pre-line;">{{ job.responsibilities or "• Design, build, and deploy clean, high-performance software modules.\n• Work closely with senior technical teams.\n• Optimize backend queries, REST APIs, and database performance." }}</p>
+                    </div>
+                </div>
+
+                <!-- Company Overview -->
+                <div class="mb-4 p-4 border rounded-3 bg-light">
+                    <h5 class="fw-bold mb-2"><i class="bi bi-building text-primary me-2"></i>About {{ job.company }}</h5>
+                    <p class="text-muted mb-0">{{ job.company_description or job.description }}</p>
+                </div>
+
+                <!-- Apply & Save Job Buttons -->
+                <div class="d-flex gap-3 pt-3 border-top">
+                    {% if already_applied %}
+                        <button class="btn btn-success btn-lg rounded-pill px-4 disabled">
+                            <i class="bi bi-check-circle-fill me-1"></i> Application Submitted
+                        </button>
+                    {% else %}
+                        <button class="btn btn-primary-gradient btn-lg rounded-pill px-5 shadow-sm" data-bs-toggle="modal" data-bs-target="#applyModal">
+                            Apply Now <i class="bi bi-arrow-right-short fs-4"></i>
+                        </button>
+                    {% endif %}
+
+                    <form action="{{ url_for('main.save_job', job_id=job.id) }}" method="POST">
+                        <button type="submit" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                            <i class="bi {% if already_saved %}bi-bookmark-fill text-warning{% else %}bi-bookmark{% endif %}"></i>
+                            {% if already_saved %}Saved{% else %}Save Job{% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Column: Similar Jobs -->
+        <div class="col-lg-4">
+            <div class="p-4 hilancer-card mb-4 bg-surface">
+                <h5 class="fw-bold mb-3"><i class="bi bi-building-check text-success me-2"></i>Company Highlights</h5>
+                <p class="fw-bold text-dark mb-1">{{ job.company }}</p>
+                <p class="text-muted small mb-3"><i class="bi bi-geo-alt me-1"></i>{{ job.location }}</p>
+                
+                <div class="border-top pt-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Industry:</span>
+                        <strong class="text-dark">{{ job.industry }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Job Rating:</span>
+                        <strong class="text-warning"><i class="bi bi-star-fill"></i> {{ job.rating }} / 5.0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Applications Received:</span>
+                        <strong class="text-dark">{{ job.applications_count }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Similar Jobs Section -->
+            <div class="p-4 hilancer-card bg-surface">
+                <h5 class="fw-bold mb-3"><i class="bi bi-layers-fill text-primary me-2"></i>Similar {{ job.category }} Jobs</h5>
+                <div class="list-group list-group-flush">
+                    {% for sim in similar_jobs %}
+                    <a href="{{ url_for('main.job_detail', job_id=sim.id) }}" class="list-group-item list-group-item-action px-0 py-3 bg-transparent border-bottom">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">{{ sim.title }}</h6>
+                                <small class="text-muted">{{ sim.company }} &bull; {{ sim.salary }}</small>
+                            </div>
+                            <span class="btn btn-sm btn-outline-primary rounded-pill">View</span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Apply Job -->
+<div class="modal fade" id="applyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold">Submit Job Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('main.apply_job', job_id=job.id) }}" method="POST">
+                <div class="modal-body">
+                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                        <strong class="d-block text-dark">{{ job.title }}</strong>
+                        <small class="text-muted">{{ job.company }} &bull; Package: {{ job.salary }}</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Cover Letter & Technical Proposal</label>
+                        <textarea name="cover_letter" class="form-control rounded-3" rows="6" placeholder="Explain why your skills are a strong match for this position..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-gradient rounded-pill px-5">Submit Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

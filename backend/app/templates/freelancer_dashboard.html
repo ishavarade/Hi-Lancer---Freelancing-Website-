@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Freelancer AI Dashboard - HiLancer{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Profile & Metrics Header Card -->
+    <div class="p-4 hilancer-card mb-4 bg-surface border-0 shadow-sm">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="rounded-circle bg-primary-subtle p-3 text-primary fs-3">
+                        <i class="bi bi-person-fill-gear"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-0">{{ current_full_name }}</h3>
+                        <p class="text-muted mb-0"><i class="bi bi-award me-1"></i>{{ profile.title or 'Senior Developer' }} &bull; Hourly Rate: <strong>₹{{ "{:,.0f}".format(profile.hourly_rate or 2500) }}/hr</strong></p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <strong class="small text-muted me-2">Active Skills:</strong>
+                    {% for skill in (profile.skills or 'Python, Flask, PostgreSQL').split(',') %}
+                        <span class="skill-tag">{{ skill.strip() }}</span>
+                    {% endfor %}
+                    <a href="{{ url_for('freelancer.profile') }}" class="small text-primary text-decoration-none ms-2"><i class="bi bi-pencil-square"></i> Edit Profile</a>
+                </div>
+            </div>
+            
+            <div class="col-lg-5 mt-3 mt-lg-0">
+                <div class="row g-2 text-center">
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded-3">
+                            <h4 class="fw-bold text-primary mb-0">₹{{ "{:,.0f}".format(total_earnings) }}</h4>
+                            <span class="text-muted small">Total Earnings</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded-3">
+                            <h4 class="fw-bold text-success mb-0">{{ applied_count }}</h4>
+                            <span class="text-muted small">Applications</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded-3">
+                            <h4 class="fw-bold text-warning mb-0">{{ saved_count }}</h4>
+                            <span class="text-muted small">Saved Jobs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Portal Navigation Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="p-4 hilancer-card h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="rounded-circle bg-primary-subtle p-2 text-primary">
+                            <i class="bi bi-briefcase-fill fs-4"></i>
+                        </div>
+                        <h5 class="fw-bold mb-0">Find Work & Jobs</h5>
+                    </div>
+                    <p class="text-muted small mb-3">Browse 2-column corporate job listings and freelance projects ranked by background AI based on your profile.</p>
+                </div>
+                <a href="{{ url_for('main.jobs_list') }}" class="btn btn-primary-gradient w-100 rounded-pill">
+                    Explore Jobs <i class="bi bi-arrow-right me-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 hilancer-card h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="rounded-circle bg-success-subtle p-2 text-success">
+                            <i class="bi bi-wallet2 fs-4"></i>
+                        </div>
+                        <h5 class="fw-bold mb-0">Income Tracker</h5>
+                    </div>
+                    <p class="text-muted small mb-3">Monitor project earnings, view monthly revenue charts, track transactions, and auto-sync completed projects.</p>
+                </div>
+                <a href="{{ url_for('freelancer.income_tracker') }}" class="btn btn-outline-success w-100 rounded-pill fw-semibold">
+                    View Income <i class="bi bi-graph-up me-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 hilancer-card h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="rounded-circle bg-warning-subtle p-2 text-warning">
+                            <i class="bi bi-compass-fill fs-4"></i>
+                        </div>
+                        <h5 class="fw-bold mb-0">AI Career Path</h5>
+                    </div>
+                    <p class="text-muted small mb-3">Generate customized career roadmaps, readiness scores, skill gap analysis, and curated learning videos.</p>
+                </div>
+                <a href="{{ url_for('freelancer.career_path') }}" class="btn btn-outline-warning w-100 rounded-pill text-dark fw-semibold">
+                    Career Advisor <i class="bi bi-compass me-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

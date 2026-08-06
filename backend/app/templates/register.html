@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - HiLancer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="p-4 p-md-5 hilancer-card shadow-lg">
+                <div class="text-center mb-4">
+                    <div class="fs-1 text-primary"><i class="bi bi-person-plus-fill"></i></div>
+                    <h3 class="fw-bold">Create Your <span class="brand-gradient">HiLancer</span> Account</h3>
+                    <p class="text-muted small">Join thousands of freelancers and client enterprises</p>
+                </div>
+
+                <form action="{{ url_for('auth.register') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Full Name</label>
+                        <input type="text" name="full_name" class="form-control rounded-3" placeholder="e.g. Alex Rivera" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email Address</label>
+                        <input type="email" name="email" class="form-control rounded-3" placeholder="name@example.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Password</label>
+                        <input type="password" name="password" class="form-control rounded-3" placeholder="At least 6 characters" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">I want to:</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="role" id="role-freelancer" value="freelancer" checked>
+                                <label class="btn btn-outline-primary w-100 py-3 rounded-3" for="role-freelancer">
+                                    <i class="bi bi-briefcase-fill d-block fs-4 mb-1"></i>
+                                    <strong>Work as Freelancer</strong>
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="role" id="role-client" value="client">
+                                <label class="btn btn-outline-primary w-100 py-3 rounded-3" for="role-client">
+                                    <i class="bi bi-building-add d-block fs-4 mb-1"></i>
+                                    <strong>Hire Freelancers</strong>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-gradient w-100 py-2 fs-6 shadow-sm mb-3">Create Account</button>
+                </form>
+
+                <div class="text-center mt-3 pt-3 border-top">
+                    <p class="text-muted small mb-0">Already have an account? <a href="{{ url_for('auth.login') }}" class="text-primary fw-semibold">Log In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

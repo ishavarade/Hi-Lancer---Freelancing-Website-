@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Log In - HiLancer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="p-4 p-md-5 hilancer-card shadow-lg">
+                <div class="text-center mb-4">
+                    <div class="fs-1 text-primary"><i class="bi bi-person-lock"></i></div>
+                    <h3 class="fw-bold">Log In to <span class="brand-gradient">HiLancer</span></h3>
+                    <p class="text-muted small">Access your AI Dashboard, Recommendations, or Client Projects</p>
+                </div>
+
+                <form action="{{ url_for('auth.login') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email Address</label>
+                        <input type="email" name="email" class="form-control rounded-3" placeholder="name@example.com" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Password</label>
+                        <input type="password" name="password" class="form-control rounded-3" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-gradient w-100 py-2 fs-6 shadow-sm mb-3">Log In</button>
+                </form>
+
+                <div class="text-center mt-3 pt-3 border-top">
+                    <p class="text-muted small mb-0">Don't have an account? <a href="{{ url_for('auth.register') }}" class="text-primary fw-semibold">Sign Up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

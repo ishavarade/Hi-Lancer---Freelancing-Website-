@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Client Dashboard - HiLancer{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Card -->
+    <div class="p-4 hilancer-card mb-4 bg-surface">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-primary-subtle p-3 text-primary fs-3">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">{{ client_profile.company_name or 'Client Enterprise' }}</h3>
+                    <p class="text-muted mb-0"><i class="bi bi-tag me-1"></i>Industry: {{ client_profile.industry or 'Technology' }} &bull; Posted Jobs: <strong>{{ jobs|length }}</strong></p>
+                </div>
+            </div>
+            
+            <a href="{{ url_for('client.post_project') }}" class="btn btn-primary-gradient shadow-sm">
+                <i class="bi bi-plus-lg me-1"></i> Post New Project
+            </a>
+        </div>
+    </div>
+
+    <!-- Active Projects Table -->
+    <div class="p-4 hilancer-card">
+        <h4 class="fw-bold mb-3"><i class="bi bi-briefcase-fill text-primary me-2"></i>My Posted Projects</h4>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Category</th>
+                        <th>Budget</th>
+                        <th>Type</th>
+                        <th>Applicants</th>
+                        <th>Posted Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td class="fw-bold text-dark">
+                            <a href="{{ url_for('main.job_detail', job_id=job.id) }}" class="text-decoration-none text-dark">{{ job.title }}</a>
+                        </td>
+                        <td><span class="badge bg-primary-subtle text-primary">{{ job.category }}</span></td>
+                        <td class="fw-bold text-success">{{ job.salary }}</td>
+                        <td>{{ job.remote_onsite }}</td>
+                        <td>
+                            <a href="{{ url_for('client.view_applicants', job_id=job.id) }}" class="badge bg-success text-white text-decoration-none px-3 py-2 rounded-pill">
+                                <i class="bi bi-people-fill me-1"></i> {{ job.applications_count or 0 }} Applicants
+                            </a>
+                        </td>
+                        <td>{{ job.posted_date.strftime('%b %d, %Y') }}</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('client.edit_project', job_id=job.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                <form action="{{ url_for('client.delete_project', job_id=job.id) }}" method="POST" onsubmit="return confirm('Delete this project?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">No projects posted yet. Click "Post New Project" above to publish your first freelance role!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

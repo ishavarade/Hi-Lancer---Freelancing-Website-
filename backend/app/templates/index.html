@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}HiLancer - AI-Powered Freelancing Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-2 rounded-pill mb-3">
+            <i class="bi bi-cpu me-1"></i> Next-Gen 4-Layer Hybrid AI Matchmaking
+        </span>
+        <h1 class="display-4 fw-extrabold mb-3">
+            Find High-Paying Freelance Work <br> Powered by <span class="brand-gradient">Artificial Intelligence</span>
+        </h1>
+        <p class="lead text-muted max-w-2xl mx-auto mb-4" style="max-width: 700px;">
+            HiLancer matches top freelancers with clients using Sentence Transformers, AI Career Path Roadmaps, ATS Resume Analysis, and Real-Time Financial Analytics.
+        </p>
+
+        <!-- Search Bar -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8">
+                <form action="{{ url_for('main.jobs_list') }}" method="GET" class="card p-2 border-0 shadow-lg rounded-pill">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-search ms-3 fs-5 text-muted"></i>
+                        <input type="text" name="q" class="form-control border-0 shadow-none px-3" placeholder="Search by title, skills (e.g. Python, Docker, AI Engineer)...">
+                        <button type="submit" class="btn btn-primary-gradient rounded-pill px-4 py-2">Find Jobs</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Live Platform Stats -->
+        <div class="row g-4 text-center mt-2">
+            <div class="col-md-3 col-6">
+                <div class="p-3 hilancer-card">
+                    <h3 class="fw-bold brand-gradient mb-1">8,000+</h3>
+                    <p class="text-muted small mb-0">Active Synthetic Jobs</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3 hilancer-card">
+                    <h3 class="fw-bold brand-gradient mb-1">94.8%</h3>
+                    <p class="text-muted small mb-0">AI Match Accuracy</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3 hilancer-card">
+                    <h3 class="fw-bold brand-gradient mb-1">4-Layer</h3>
+                    <p class="text-muted small mb-0">Hybrid Recommendation</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3 hilancer-card">
+                    <h3 class="fw-bold brand-gradient mb-1">₹50Cr+</h3>
+                    <p class="text-muted small mb-0">Tracked Freelance Revenue</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4-Layer Hybrid Architecture Showcase -->
+<section class="py-5 bg-surface">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">How HiLancer's <span class="brand-gradient">Hybrid AI Engine</span> Works</h2>
+            <p class="text-muted">Unlike standard TF-IDF recommenders, our system combines 4 intelligent layers for optimal precision.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="p-4 hilancer-card h-100">
+                    <div class="text-primary fs-1 mb-3"><i class="bi bi-diagram-3-fill"></i></div>
+                    <h5 class="fw-bold">Layer 1: Sentence Transformer</h5>
+                    <p class="text-muted small">Encodes job descriptions and user resumes using <code>all-MiniLM-L6-v2</code> embeddings to compute deep cosine similarity.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 hilancer-card h-100">
+                    <div class="text-success fs-1 mb-3"><i class="bi bi-tags-fill"></i></div>
+                    <h5 class="fw-bold">Layer 2: Content Skill Match</h5>
+                    <p class="text-muted small">Evaluates technical skills overlap, domain experience levels, and job categories for exact match coverage.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 hilancer-card h-100">
+                    <div class="text-warning fs-1 mb-3"><i class="bi bi-graph-up-arrow"></i></div>
+                    <h5 class="fw-bold">Layer 3: Trending Signals</h5>
+                    <p class="text-muted small">Factors in job popularity scores, active applicant volume, client ratings, and recency of job postings.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 hilancer-card h-100">
+                    <div class="text-danger fs-1 mb-3"><i class="bi bi-sliders"></i></div>
+                    <h5 class="fw-bold">Layer 4: Weighted Hybrid</h5>
+                    <p class="text-muted small">Computes Final Score = 0.60×Semantic + 0.20×Skills + 0.10×Trending + 0.10×Recency with explainability.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Core Portals Quick Access -->
+<section class="py-5 bg-surface border-top border-bottom">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Explore Platform <span class="brand-gradient">Portals</span></h2>
+            <p class="text-muted">Direct access to corporate job listings, freelance project gigs, and real-time revenue tracking.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="p-4 hilancer-card text-center h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="text-primary fs-1 mb-2"><i class="bi bi-building"></i></div>
+                        <h4 class="fw-bold mb-2">Find Work Portal</h4>
+                        <p class="text-muted small">2-Column job portal featuring clean corporate job titles, LPA salary packages, and sticky job detail panels.</p>
+                    </div>
+                    <a href="{{ url_for('main.jobs_list') }}" class="btn btn-primary-gradient rounded-pill w-100">Browse Jobs</a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-4 hilancer-card text-center h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="text-success fs-1 mb-2"><i class="bi bi-kanban"></i></div>
+                        <h4 class="fw-bold mb-2">Freelance Projects</h4>
+                        <p class="text-muted small">Explore freelance project gigs with budgets, skill badges, deadlines, and auto-sync completion status.</p>
+                    </div>
+                    <a href="{{ url_for('main.jobs_list', tab='projects') }}" class="btn btn-outline-success rounded-pill w-100 fw-semibold">View Freelance Projects</a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-4 hilancer-card text-center h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="text-warning fs-1 mb-2"><i class="bi bi-wallet2"></i></div>
+                        <h4 class="fw-bold mb-2">Freelance Income Tracker</h4>
+                        <p class="text-muted small">Track net revenue in INR (₹), monthly earnings graphs, and project-wise transaction histories.</p>
+                    </div>
+                    <a href="{{ url_for('freelancer.income_tracker') }}" class="btn btn-outline-warning rounded-pill w-100 text-dark fw-semibold">Open Income Tracker</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Jobs -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1">Trending & Featured Jobs</h3>
+                <p class="text-muted mb-0">Explore high-demand tech jobs posted by top companies.</p>
+            </div>
+            <a href="{{ url_for('main.jobs_list') }}" class="btn btn-outline-primary rounded-pill fw-semibold">View All Jobs <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="row g-4">
+            {% for job in featured_jobs %}
+            <div class="col-md-6 col-lg-4">
+                <div class="p-4 hilancer-card h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-primary-subtle text-primary rounded-pill fw-semibold">{{ job.category }}</span>
+                            <span class="badge-trending"><i class="bi bi-fire"></i> {{ job.trending_score }}</span>
+                        </div>
+                        <h5 class="fw-bold mb-2">
+                            <a href="{{ url_for('main.job_detail', job_id=job.id) }}" class="text-decoration-none text-dark">{{ job.title }}</a>
+                        </h5>
+                        <p class="text-muted small mb-3"><i class="bi bi-building me-1"></i>{{ job.company }} &bull; <i class="bi bi-geo-alt me-1"></i>{{ job.location }}</p>
+                        
+                        <div class="mb-3">
+                            {% for skill in job.skills.split(',')[:4] %}
+                                <span class="skill-tag">{{ skill.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fw-bold text-success fs-5">{{ job.salary }}</span>
+                        </div>
+                        <a href="{{ url_for('main.job_detail', job_id=job.id) }}" class="btn btn-sm btn-outline-primary rounded-pill">Apply Now</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- AI Features Spotlight -->
+<section class="py-5 bg-surface border-top">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Built to Empower <span class="brand-gradient">Modern Freelancers</span></h2>
+        </div>
+
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-6">
+                <div class="p-4 hilancer-card">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-compass-fill text-primary me-2"></i>AI Career Path Advisor</h4>
+                    <p class="text-muted">Transform your career with customized 8-month learning roadmaps. Practice algorithm & coding problems directly on <strong>W3Schools</strong> and <strong>GeeksforGeeks</strong>, and watch curated YouTube playlists.</p>
+                    {% if current_role == 'freelancer' %}
+                        <a href="{{ url_for('freelancer.career_path') }}" class="btn btn-primary-gradient">Explore My Career Path</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary-gradient">Get Career Roadmap</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="p-4 hilancer-card">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-file-earmark-check-fill text-success me-2"></i>ATS Resume Analyzer</h4>
+                    <p class="text-muted">Ensure your resume passes ATS scanners before applying. Instantly check keyword density, formatting checks, and integrate with external ATS building APIs.</p>
+                    {% if current_role == 'freelancer' %}
+                        <a href="{{ url_for('freelancer.ats_check') }}" class="btn btn-secondary-gradient">Check Resume ATS Score</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary-gradient">Analyze Resume ATS</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+
+{% block title %}Find Work - Corporate Jobs & Freelance Projects | HiLancer AI Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header & Category Filter Section -->
+    <div class="p-4 hilancer-card mb-4 bg-surface shadow-sm">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+            <div>
+                <h3 class="fw-bold mb-1"><i class="bi bi-briefcase-fill text-primary me-2"></i>Find Work Portal</h3>
+                <p class="text-muted mb-0">Multi-Factor Hybrid AI Recommendations powered by Sentence Transformers & Skill Graph.</p>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-pills bg-light p-1 rounded-pill border">
+                <li class="nav-item">
+                    <a class="nav-link rounded-pill fw-semibold {% if active_tab != 'projects' %}active{% endif %}" href="{{ url_for('main.jobs_list', category=current_cat, tab='jobs') }}">
+                        <i class="bi bi-building me-1"></i> Full-Time Jobs ({{ jobs|length }})
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-pill fw-semibold {% if active_tab == 'projects' %}active{% endif %}" href="{{ url_for('main.jobs_list', category=current_cat, tab='projects') }}">
+                        <i class="bi bi-code-slash me-1"></i> Freelance Projects ({{ freelance_projects|length }})
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Clean Category Filter Dropdown Form -->
+        <form action="{{ url_for('main.jobs_list') }}" method="GET" class="row g-2 align-items-center">
+            <input type="hidden" name="tab" value="{{ active_tab }}">
+            <div class="col-md-9 col-8">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-funnel-fill text-primary"></i></span>
+                    <select name="category" class="form-select border-start-0 ps-0 fw-medium" onchange="this.form.submit()">
+                        <option value="">All Categories (All 32 Tech Domains)</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat }}" {% if current_cat == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-4">
+                <button type="submit" class="btn btn-primary-gradient w-100 rounded-3">
+                    <i class="bi bi-cpu me-1"></i> AI Recommend
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if active_tab == 'projects' %}
+    <!-- ==================== FREELANCE PROJECTS SECTION ==================== -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">
+            <i class="bi bi-kanban text-success me-2"></i>Recommended Freelance Projects
+            {% if current_cat %}<span class="badge bg-primary-subtle text-primary fs-6 ms-2">{{ current_cat }}</span>{% endif %}
+        </h4>
+        <span class="text-muted small"><i class="bi bi-stars text-warning me-1"></i>Ranked by Resume & Skill Fit</span>
+    </div>
+
+    <div class="row g-4">
+        {% for proj in freelance_projects %}
+        <div class="col-lg-6">
+            <div class="p-4 hilancer-card h-100 d-flex flex-column justify-content-between border-start border-4 {% if proj.match_pct >= 85 %}border-success{% else %}border-primary{% endif %}">
+                <div>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-success-subtle text-success fw-bold px-2 py-1"><i class="bi bi-stars"></i> {{ proj.match_pct }}% Match</span>
+                                <span class="badge bg-secondary-subtle text-dark"><i class="bi bi-tag-fill me-1"></i>{{ proj.category }}</span>
+                            </div>
+                            <h4 class="fw-bold mb-1 text-dark">{{ proj.title }}</h4>
+                            <span class="text-muted small"><i class="bi bi-person-fill me-1"></i>Client: {{ proj.client_name }}</span>
+                        </div>
+                        <div class="text-end">
+                            <h3 class="fw-bold text-success mb-0">₹{{ "{:,.0f}".format(proj.budget) }}</h3>
+                            <small class="text-muted">Fixed Budget</small>
+                        </div>
+                    </div>
+
+                    <!-- Explainable AI Box -->
+                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                        <small class="text-dark fw-medium d-block mb-1">
+                            <i class="bi bi-lightbulb-fill text-warning me-1"></i> <strong>Why Recommended:</strong>
+                        </small>
+                        <small class="text-muted">{{ proj.why_recommended }}</small>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-light text-dark border"><i class="bi bi-clock me-1"></i>{{ proj.duration }}</span>
+                        <span class="badge bg-info-subtle text-info"><i class="bi bi-bar-chart me-1"></i>{{ proj.difficulty }}</span>
+                        <span class="badge bg-warning-subtle text-dark"><i class="bi bi-calendar-event me-1"></i>{{ proj.deadline }}</span>
+                        {% if proj.status == 'Completed' %}
+                            <span class="badge bg-success text-white"><i class="bi bi-check-circle-fill me-1"></i>Completed</span>
+                        {% else %}
+                            <span class="badge bg-primary-subtle text-primary"><i class="bi bi-lightning-fill me-1"></i>Open</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1 fw-semibold">Required Skills:</small>
+                        {% for skill in (proj.skills or '').split(',') %}
+                            <span class="skill-tag">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                    {% if proj.status == 'Completed' %}
+                        <button class="btn btn-outline-success rounded-pill btn-sm disabled" disabled>
+                            <i class="bi bi-check-all me-1"></i> Completed & Synced
+                        </button>
+                    {% else %}
+                        <form action="{{ url_for('main.complete_freelance_project', project_id=proj.id) }}" method="POST">
+                            <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm">
+                                <i class="bi bi-check-circle me-1"></i> Mark as Completed
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    <a href="{{ url_for('freelancer.income_tracker') }}" class="small text-primary text-decoration-none">
+                        Income Tracker <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="p-5 hilancer-card">
+                <h5 class="fw-bold">No freelance projects match this category</h5>
+                <p class="text-muted">Select another category from the dropdown above to view AI recommendations.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- ==================== 2-COLUMN CORPORATE JOBS LAYOUT ==================== -->
+    <div class="row g-4">
+        <!-- LEFT COLUMN: Scrollable Job List -->
+        <div class="col-lg-5">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small fw-semibold">
+                    <i class="bi bi-stars text-warning me-1"></i>Showing {{ jobs|length }} Recommended Jobs 
+                    {% if current_cat %}({{ current_cat }}){% endif %}
+                </span>
+            </div>
+
+            <div class="job-scroll-container">
+                {% for job in jobs %}
+                <div class="p-3 mb-3 job-card-compact {% if loop.first %}active{% endif %}" id="job-card-{{ job.id }}" onclick="selectJob({{ job.id }})">
+                    <div class="d-flex align-items-start gap-3">
+                        <img src="{{ job.company_logo or 'https://img.icons8.com/color/96/company.png' }}" alt="{{ job.company }}" class="rounded-3 shadow-sm p-1 border" style="width: 48px; height: 48px; object-fit: contain; background: #fff;">
+                        
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-success-subtle text-success py-1 px-2 fw-bold" style="font-size: 0.75rem;"><i class="bi bi-stars"></i> {{ job.match_pct }}% Match</span>
+                                <span class="fw-bold text-success fs-6">{{ job.salary }}</span>
+                            </div>
+                            
+                            <h6 class="fw-bold text-dark mb-1 text-truncate">{{ job.title }}</h6>
+                            <p class="text-muted mb-1 small me-2"><i class="bi bi-building me-1"></i>{{ job.company }} &bull; <i class="bi bi-geo-alt"></i> {{ job.location }}</p>
+
+                            <div class="d-flex flex-wrap gap-1 align-items-center mb-2">
+                                <span class="badge bg-primary-subtle text-primary py-1 px-2" style="font-size: 0.75rem;">{{ job.job_type }}</span>
+                                <small class="text-muted me-2" style="font-size: 0.78rem;"><i class="bi bi-tag"></i> {{ job.category }}</small>
+                                <small class="text-muted" style="font-size: 0.78rem;"><i class="bi bi-briefcase"></i> {{ job.experience }}</small>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center pt-1 border-top" style="font-size: 0.75rem;">
+                                <span class="text-muted"><i class="bi bi-clock me-1"></i>Posted {{ job.posted_date.strftime('%b %d') if job.posted_date else 'Recently' }}</span>
+                                <span class="text-primary fw-semibold">View Details <i class="bi bi-chevron-right"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="p-4 hilancer-card text-center">
+                    <h6 class="fw-bold mb-1">No jobs found in this category</h6>
+                    <p class="text-muted small">Select another category from the dropdown menu.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Sticky Job Details Panel -->
+        <div class="col-lg-7">
+            <div class="p-4 hilancer-card sticky-job-details" id="job-details-panel">
+                {% if jobs %}
+                {% set first_job = jobs[0] %}
+                <div id="job-detail-content">
+                    <!-- Dynamic Header -->
+                    <div class="d-flex align-items-start gap-3 mb-4 pb-3 border-bottom">
+                        <img id="detail-company-logo" src="{{ first_job.company_logo or 'https://img.icons8.com/color/96/company.png' }}" alt="Company Logo" class="rounded-3 shadow-sm p-2 border" style="width: 64px; height: 64px; object-fit: contain; background: #fff;">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="badge bg-success-subtle text-success px-3 py-1 fw-bold fs-6" id="detail-match-badge"><i class="bi bi-stars"></i> {{ first_job.match_pct }}% Match</span>
+                                        <span class="badge bg-secondary-subtle text-dark" id="detail-category-badge">{{ first_job.category }}</span>
+                                    </div>
+                                    <h4 class="fw-bold mb-1" id="detail-title">{{ first_job.title }}</h4>
+                                    <p class="text-muted mb-0" id="detail-company-meta">
+                                        <strong id="detail-company-name">{{ first_job.company }}</strong> &bull; 
+                                        <span id="detail-industry">{{ first_job.industry }}</span> &bull; 
+                                        <i class="bi bi-geo-alt"></i> <span id="detail-location">{{ first_job.location }}</span>
+                                    </p>
+                                </div>
+                                <div class="text-end">
+                                    <h3 class="fw-bold text-success mb-0" id="detail-salary">{{ first_job.salary }}</h3>
+                                    <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill" id="detail-job-type">{{ first_job.job_type }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explainable AI Box -->
+                    <div class="p-3 bg-light rounded-3 mb-4 border border-start border-4 border-primary">
+                        <small class="text-dark fw-medium d-block mb-1">
+                            <i class="bi bi-lightbulb-fill text-warning me-1"></i> <strong>Why Recommended:</strong>
+                        </small>
+                        <small class="text-muted" id="detail-why-recommended">{{ first_job.why_recommended }}</small>
+                    </div>
+
+                    <!-- Quick Overview Chips -->
+                    <div class="row g-3 p-3 bg-light rounded-3 mb-4 border" id="quick-meta-box">
+                        <div class="col-6 col-md-3">
+                            <small class="text-muted d-block">Experience:</small>
+                            <strong class="text-dark" id="detail-experience">{{ first_job.experience }}</strong>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <small class="text-muted d-block">Qualification:</small>
+                            <strong class="text-dark" id="detail-qualification">{{ first_job.qualification }}</strong>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <small class="text-muted d-block">Posted Date:</small>
+                            <strong class="text-dark" id="detail-posted">{{ first_job.posted_date.strftime('%b %d, %Y') if first_job.posted_date else 'Recently' }}</strong>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <small class="text-muted d-block">Apply Deadline:</small>
+                            <strong class="text-danger" id="detail-deadline">{{ first_job.last_date_to_apply }}</strong>
+                        </div>
+                    </div>
+
+                    <!-- Required Skills -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-2 text-dark"><i class="bi bi-tools text-primary me-2"></i>Required Skills</h6>
+                        <div id="detail-skills-container">
+                            {% for skill in (first_job.skills or '').split(',') %}
+                                <span class="skill-tag px-3 py-1 fs-6">{{ skill.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Job Responsibilities -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-2 text-dark"><i class="bi bi-list-check text-primary me-2"></i>Key Responsibilities</h6>
+                        <div class="p-3 bg-body-tertiary rounded-3 border">
+                            <p class="mb-0 text-secondary" id="detail-responsibilities" style="white-space: pre-line;">{{ first_job.responsibilities }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Company Information -->
+                    <div class="mb-4 p-3 border rounded-3 bg-surface">
+                        <h6 class="fw-bold mb-2 text-dark"><i class="bi bi-building text-primary me-2"></i>Company Overview</h6>
+                        <p class="text-muted small mb-0" id="detail-company-desc">{{ first_job.company_description }}</p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-3 pt-3 border-top">
+                        <button id="apply-btn" class="btn btn-primary-gradient btn-lg rounded-pill px-5 shadow-sm" data-bs-toggle="modal" data-bs-target="#applyModal">
+                            Apply Now <i class="bi bi-arrow-right-short fs-4"></i>
+                        </button>
+                        
+                        <form id="save-form" action="{{ url_for('main.save_job', job_id=first_job.id) }}" method="POST">
+                            <button type="submit" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                                <i class="bi bi-bookmark me-1"></i> Save Job
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-briefcase fs-1 d-block mb-3 text-secondary"></i>
+                    Select a job from the left panel to inspect full details.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal: Apply Job -->
+{% if jobs %}
+<div class="modal fade" id="applyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold">Submit Job Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="modal-apply-form" action="{{ url_for('main.apply_job', job_id=jobs[0].id) }}" method="POST">
+                <div class="modal-body">
+                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                        <strong class="d-block text-dark" id="modal-job-title">{{ jobs[0].title }}</strong>
+                        <small class="text-muted" id="modal-job-sub">{{ jobs[0].company }} &bull; {{ jobs[0].salary }}</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Cover Letter & Technical Proposal</label>
+                        <textarea name="cover_letter" class="form-control rounded-3" rows="5" placeholder="Highlight key skills, project experience, and availability..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-gradient rounded-pill px-5">Submit Proposal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function selectJob(jobId) {
+        document.querySelectorAll('.job-card-compact').forEach(card => card.classList.remove('active'));
+        const activeCard = document.getElementById(`job-card-${jobId}`);
+        if (activeCard) activeCard.classList.add('active');
+
+        try {
+            const res = await fetch(`/api/job/${jobId}`);
+            if (!res.ok) return;
+            const job = await res.json();
+
+            document.getElementById('detail-company-logo').src = job.company_logo;
+            document.getElementById('detail-title').innerText = job.title;
+            document.getElementById('detail-company-name').innerText = job.company;
+            document.getElementById('detail-industry').innerText = job.industry;
+            document.getElementById('detail-location').innerText = job.location;
+            document.getElementById('detail-salary').innerText = job.salary;
+            document.getElementById('detail-job-type').innerText = job.job_type;
+            document.getElementById('detail-experience').innerText = job.experience;
+            document.getElementById('detail-qualification').innerText = job.qualification;
+            document.getElementById('detail-posted').innerText = job.posted_date;
+            document.getElementById('detail-deadline').innerText = job.last_date_to_apply;
+            document.getElementById('detail-responsibilities').innerText = job.responsibilities;
+            document.getElementById('detail-company-desc').innerText = job.company_description;
+
+            // Render Match Badge & Category Badge
+            const matchBadge = document.getElementById('detail-match-badge');
+            if (matchBadge && job.match_pct) matchBadge.innerHTML = `<i class="bi bi-stars"></i> ${job.match_pct}% Match`;
+            
+            const catBadge = document.getElementById('detail-category-badge');
+            if (catBadge && job.category) catBadge.innerText = job.category;
+
+            const whyRec = document.getElementById('detail-why-recommended');
+            if (whyRec && job.why_recommended) whyRec.innerText = job.why_recommended;
+
+            // Render Skill Badges
+            const skillsContainer = document.getElementById('detail-skills-container');
+            skillsContainer.innerHTML = job.skills.map(s => `<span class="skill-tag px-3 py-1 fs-6">${s}</span>`).join(' ');
+
+            // Update Forms
+            document.getElementById('save-form').action = `/job/${job.id}/save`;
+            const modalForm = document.getElementById('modal-apply-form');
+            if (modalForm) {
+                modalForm.action = `/job/${job.id}/apply`;
+                document.getElementById('modal-job-title').innerText = job.title;
+                document.getElementById('modal-job-sub').innerText = `${job.company} • ${job.salary}`;
+            }
+
+        } catch (err) {
+            console.error('Job detail fetch error:', err);
+        }
+    }
+</script>
+{% endblock %}

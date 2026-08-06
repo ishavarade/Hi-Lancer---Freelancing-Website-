@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Freelance Income Tracker - HiLancer{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-wallet2 text-primary me-2"></i>Freelance Income Tracker</h3>
+            <p class="text-muted mb-0">Track project earnings in Indian Rupees (₹), monitor monthly trends, and view transaction history.</p>
+        </div>
+        <button class="btn btn-primary-gradient shadow-sm" data-bs-toggle="modal" data-bs-target="#addIncomeModal">
+            <i class="bi bi-plus-lg me-1"></i> Log Freelance Income
+        </button>
+    </div>
+
+    <!-- Metric Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="p-4 hilancer-card text-center bg-surface">
+                <div class="text-success fs-2 mb-1"><i class="bi bi-graph-up-arrow"></i></div>
+                <h2 class="fw-bold mb-1 text-success">₹{{ "{:,.2f}".format(total_earnings) }}</h2>
+                <span class="text-muted small fw-semibold">Total Net Revenue</span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 hilancer-card text-center bg-surface">
+                <div class="text-primary fs-2 mb-1"><i class="bi bi-check-circle-fill"></i></div>
+                <h2 class="fw-bold mb-1 text-primary">{{ incomes|length }}</h2>
+                <span class="text-muted small fw-semibold">Completed Freelance Projects</span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 hilancer-card text-center bg-surface">
+                <div class="text-warning fs-2 mb-1"><i class="bi bi-pie-chart-fill"></i></div>
+                <h2 class="fw-bold mb-1 text-dark">
+                    ₹{{ "{:,.2f}".format(total_earnings / incomes|length if incomes else 0) }}
+                </h2>
+                <span class="text-muted small fw-semibold">Average Revenue per Project</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Earnings Graph -->
+    <div class="p-4 hilancer-card mb-4 bg-surface shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0"><i class="bi bi-bar-chart-line-fill text-primary me-2"></i>Monthly Earnings Graph</h5>
+            <span class="badge bg-primary-subtle text-primary">Freelance Revenue</span>
+        </div>
+        <div style="height: 320px;">
+            <canvas id="monthlyEarningsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Project-wise Earnings & Transaction History -->
+    <div class="p-4 hilancer-card bg-surface shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-primary me-2"></i>Project-wise Earnings & Recent Transactions</h5>
+            <span class="text-muted small">Auto-synced with Completed Freelance Projects</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Project Name</th>
+                        <th>Client Name</th>
+                        <th>Category</th>
+                        <th>Project Earnings (₹)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inc in incomes %}
+                    <tr>
+                        <td>{{ inc.date.strftime('%b %d, %Y') if inc.date else 'Recently' }}</td>
+                        <td class="fw-bold text-dark">{{ inc.project_name }}</td>
+                        <td><i class="bi bi-person me-1 text-muted"></i>{{ inc.client_name }}</td>
+                        <td><span class="badge bg-primary-subtle text-primary">{{ inc.category }}</span></td>
+                        <td class="fw-bold text-success fs-6">+₹{{ "{:,.2f}".format(inc.amount) }}</td>
+                        <td><span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle me-1"></i>Cleared</span></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No income transactions recorded yet. Complete a project to auto-sync revenue!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add Freelance Transaction -->
+<div class="modal fade" id="addIncomeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold">Log Freelance Revenue</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('freelancer.income_tracker') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Project Title</label>
+                        <input type="text" name="project_name" class="form-control rounded-3" placeholder="e.g. AI Chatbot Development" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Client Name</label>
+                        <input type="text" name="client_name" class="form-control rounded-3" placeholder="e.g. Axiom Tech" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Earned Amount (₹)</label>
+                        <input type="number" step="500" name="amount" class="form-control rounded-3" placeholder="45000" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Category</label>
+                        <select name="category" class="form-select rounded-3">
+                            <option value="Freelance Project">Freelance Project</option>
+                            <option value="Direct Client Retainer">Direct Client Retainer</option>
+                            <option value="Consulting & Advisory">Consulting & Advisory</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-gradient rounded-pill px-4">Record Earnings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('monthlyEarningsChart').getContext('2d');
+    const monthlyLabels = {{ monthly_labels | tojson }};
+    const monthlyValues = {{ monthly_values | tojson }};
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: monthlyLabels,
+            datasets: [{
+                label: 'Freelance Monthly Net Revenue (₹)',
+                data: monthlyValues,
+                backgroundColor: 'rgba(99, 102, 241, 0.85)',
+                borderColor: '#4f46e5',
+                borderWidth: 1,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true, position: 'top' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(val) { return '₹' + val.toLocaleString(); }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

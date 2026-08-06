@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Post Project - HiLancer{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="p-4 p-md-5 hilancer-card shadow-lg">
+                <h3 class="fw-bold mb-3"><i class="bi bi-file-earmark-plus-fill text-primary me-2"></i>Post a New Project</h3>
+                <p class="text-muted mb-4">Publish your job details and let our 4-Layer Hybrid AI engine match your project with top qualified freelancers.</p>
+
+                <form action="{{ url_for('client.post_project') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Project Title</label>
+                        <input type="text" name="title" class="form-control rounded-3" placeholder="e.g. Senior Python & FastAPI Developer for LLM Application" required>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Category</label>
+                            <select name="category" class="form-select rounded-3">
+                                <option value="AI & Machine Learning">AI & Machine Learning</option>
+                                <option value="Web Development" selected>Web Development</option>
+                                <option value="Mobile Development">Mobile Development</option>
+                                <option value="Data & Cloud">Data & Cloud</option>
+                                <option value="Design & Creative">Design & Creative</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Budget Range / Rate (₹)</label>
+                            <input type="text" name="salary" class="form-control rounded-3" placeholder="e.g. ₹50,000 - ₹1,50,000" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Required Skills (Comma Separated)</label>
+                        <input type="text" name="skills" class="form-control rounded-3" placeholder="e.g. Python, FastAPI, PostgreSQL, Docker, LangChain" required>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Experience Level</label>
+                            <select name="experience" class="form-select rounded-3">
+                                <option value="Entry Level">Entry Level</option>
+                                <option value="Intermediate" selected>Intermediate</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Location / Remote Type</label>
+                            <select name="remote_onsite" class="form-select rounded-3">
+                                <option value="Remote" selected>Remote (India)</option>
+                                <option value="Onsite">Onsite</option>
+                                <option value="Hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Detailed Project Description</label>
+                        <textarea name="description" class="form-control rounded-3" rows="6" placeholder="Outline project scope, deliverables, timeline, and architectural requirements..." required></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('client.dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary-gradient rounded-pill px-5 shadow-sm">Publish Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

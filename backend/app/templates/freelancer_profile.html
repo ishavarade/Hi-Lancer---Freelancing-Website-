@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - HiLancer{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="p-4 p-md-5 hilancer-card shadow-lg">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h3 class="fw-bold mb-0"><i class="bi bi-person-lines-fill text-primary me-2"></i>Freelancer Profile</h3>
+                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">Active AI Matching Profile</span>
+                </div>
+
+                <form action="{{ url_for('freelancer.profile') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Professional Title</label>
+                        <input type="text" name="title" class="form-control rounded-3" value="{{ profile.title }}" placeholder="e.g. Senior Full-Stack AI Engineer" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Technical Skills (Comma Separated)</label>
+                        <input type="text" name="skills" class="form-control rounded-3" value="{{ profile.skills }}" placeholder="e.g. Python, Flask, FastAPI, PostgreSQL, Docker, Machine Learning" required>
+                        <small class="text-muted">Used by Sentence Transformers and Layer 2 Content Recommender for job matching.</small>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Experience (Years)</label>
+                            <input type="number" name="experience_years" class="form-control rounded-3" value="{{ profile.experience_years or 2 }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Hourly Rate (₹/hr)</label>
+                            <input type="number" step="50" name="hourly_rate" class="form-control rounded-3" value="{{ profile.hourly_rate or 2500.0 }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Education & Certifications</label>
+                        <input type="text" name="education" class="form-control rounded-3" value="{{ profile.education }}" placeholder="e.g. B.Tech in Computer Science">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Portfolio Website / GitHub URL</label>
+                        <input type="url" name="portfolio_url" class="form-control rounded-3" value="{{ profile.portfolio_url }}" placeholder="https://github.com/yourusername">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Bio / Resume Text</label>
+                        <textarea name="bio" class="form-control rounded-3" rows="5" placeholder="Describe your technical background, projects built, and industry experience...">{{ profile.bio }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('freelancer.dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary-gradient rounded-pill px-5 shadow-sm">Save Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

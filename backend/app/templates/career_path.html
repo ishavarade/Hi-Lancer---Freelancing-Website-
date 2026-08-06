@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}AI Career Advisor - HiLancer{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Banner -->
+    <div class="p-4 p-md-5 hilancer-card mb-5 text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-primary px-3 py-2 rounded-pill fw-bold mb-3">
+                    <i class="bi bi-compass-fill me-1"></i> Highest Priority Feature: AI Career Path Advisor
+                </span>
+                <h2 class="display-6 fw-bold mb-2">Personalized AI Career Path Roadmap</h2>
+                <p class="text-light opacity-75 mb-4">
+                    Based on your profile skills and career goals, our NLP & Skill Graph engine has created an 8-month targeted learning path to make you 100% job-ready.
+                </p>
+
+                <form action="{{ url_for('freelancer.career_path') }}" method="POST" class="row g-2 align-items-center">
+                    <div class="col-md-7">
+                        <select name="preferred_role" class="form-select form-select-lg rounded-pill">
+                            <option value="AI Engineer" {% if target_role == 'AI Engineer' %}selected{% endif %}>AI Engineer (Transformers, RAG, MLOps, Vector DB)</option>
+                            <option value="Full-Stack AI Developer" {% if target_role == 'Full-Stack AI Developer' %}selected{% endif %}>Full-Stack AI Developer (Python, React, FastAPI, Docker)</option>
+                            <option value="Data Scientist & ML Developer" {% if target_role == 'Data Scientist & ML Developer' %}selected{% endif %}>Data Scientist & ML Developer (PyTorch, NLP, Scikit-Learn)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <button type="submit" class="btn btn-primary-gradient btn-lg rounded-pill w-100 fw-bold">Generate AI Roadmap</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-lg-4 mt-4 mt-lg-0 text-center">
+                <div class="p-4 bg-white bg-opacity-10 rounded-4 backdrop-blur">
+                    <h5 class="text-uppercase text-light small fw-bold tracking-wider mb-2">Job Readiness Score</h5>
+                    <div class="display-4 fw-extrabold text-success mb-2">{{ career.job_readiness_pct or 78.5 }}%</div>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: {{ career.job_readiness_pct or 78.5 }}%"></div>
+                    </div>
+                    <small class="text-light opacity-75">Current Skill Score: {{ career.current_skill_score or 72 }}%</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column: 8-Month Roadmap Steps -->
+        <div class="col-lg-8">
+            <h3 class="fw-bold mb-4"><i class="bi bi-signpost-split-fill text-primary me-2"></i>Step-by-Step 8-Month Learning Path</h3>
+            
+            <div class="roadmap-timeline ms-2">
+                {% for step in (career.roadmap or []) %}
+                <div class="roadmap-step p-4 hilancer-card mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-1 rounded-pill">{{ step.month }}</span>
+                        <span class="small text-muted"><i class="bi bi-clock-history me-1"></i>3-4 Weeks Focused Study</span>
+                    </div>
+                    <h4 class="fw-bold mb-2">{{ step.title }}</h4>
+                    <p class="text-muted mb-3">{{ step.desc }}</p>
+                    
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in step.skills %}
+                            <span class="skill-tag fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i>{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right Column: Practice Problems & YouTube Learning Recommendations -->
+        <div class="col-lg-4">
+            <!-- Practice Platforms Card (W3Schools & GeeksforGeeks) -->
+            <div class="p-4 hilancer-card mb-4">
+                <h4 class="fw-bold mb-3"><i class="bi bi-code-square text-success me-2"></i>Practice Problems</h4>
+                <p class="text-muted small">Practice coding challenges and algorithm concepts directly on leading practice platforms:</p>
+
+                <div class="list-group list-group-flush mb-3">
+                    {% for p in (career.practice_links or []) %}
+                    <a href="{{ p.url }}" target="_blank" class="list-group-item list-group-item-action px-0 py-3 bg-transparent border-bottom">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="badge bg-success-subtle text-success fw-bold">{{ p.platform }}</span>
+                            <small class="text-primary fw-bold">Practice Here <i class="bi bi-box-arrow-up-right"></i></small>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">{{ p.title }}</h6>
+                        <small class="text-muted d-block">{{ p.note }}</small>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- YouTube Video Tutorials via YouTube API -->
+            <div class="p-4 hilancer-card">
+                <h4 class="fw-bold mb-3"><i class="bi bi-youtube text-danger me-2"></i>Recommended YouTube Video Playlists</h4>
+                <p class="text-muted small">Curated video tutorials & roadmaps for {{ target_role }}:</p>
+
+                <div class="d-flex flex-column gap-3">
+                    {% for video in youtube_videos %}
+                    <div class="card border-0 bg-light p-2 rounded-3">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-5">
+                                <img src="{{ video.thumbnail }}" class="img-fluid rounded-2 shadow-sm" alt="Thumbnail">
+                            </div>
+                            <div class="col-7">
+                                <span class="badge bg-secondary-subtle text-dark small mb-1" style="font-size: 0.7rem;">{{ video.level }}</span>
+                                <h6 class="fw-bold mb-1 text-truncate" style="font-size: 0.85rem;" title="{{ video.title }}">{{ video.title }}</h6>
+                                <small class="text-muted d-block" style="font-size: 0.75rem;"><i class="bi bi-person me-1"></i>{{ video.channel }}</small>
+                                <a href="{{ video.url }}" target="_blank" class="btn btn-danger btn-sm py-0 px-2 mt-1" style="font-size: 0.75rem;">
+                                    Watch <i class="bi bi-play-fill"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

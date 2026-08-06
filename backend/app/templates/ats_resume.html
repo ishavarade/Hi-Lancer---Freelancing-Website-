@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}ATS Resume Score Check - HiLancer{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Banner -->
+    <div class="p-4 p-md-5 hilancer-card mb-4 bg-surface">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill fw-bold mb-3">
+                    <i class="bi bi-file-earmark-check-fill me-1"></i> Integrated ATS Resume Checker
+                </span>
+                <h2 class="fw-bold mb-2">Check If Your Resume Is <span class="brand-gradient">ATS Friendly</span></h2>
+                <p class="text-muted">
+                    Scan your resume text for keyword density, formatting compliance, and missing technical skills before applying to client jobs.
+                </p>
+            </div>
+            
+            <div class="col-lg-4 text-center mt-3 mt-lg-0">
+                <div class="p-4 bg-light rounded-4 border">
+                    <span class="small text-muted fw-bold d-block text-uppercase">ATS Compatibility Score</span>
+                    <div class="display-4 fw-extrabold text-primary my-1">{{ ats.ats_score or 85.0 }}%</div>
+                    <span class="badge bg-success rounded-pill px-3 py-1">{{ ats.overall_status or 'Excellent - High Match' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left: Text Form & Analysis -->
+        <div class="col-lg-7">
+            <div class="p-4 hilancer-card mb-4">
+                <h4 class="fw-bold mb-3"><i class="bi bi-file-text text-primary me-2"></i>Analyze Your Resume</h4>
+                
+                <form action="{{ url_for('freelancer.ats_check') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Paste Resume Text</label>
+                        <textarea name="resume_text" class="form-control rounded-3" rows="10" placeholder="Paste your resume content, technical summary, or work history here...">{{ resume_text }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-gradient rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-search me-1"></i> Scan Resume ATS Score
+                    </button>
+                </form>
+            </div>
+
+            <!-- Found & Missing Keywords -->
+            <div class="p-4 hilancer-card">
+                <h5 class="fw-bold mb-3"><i class="bi bi-key-fill text-warning me-2"></i>Technical Keyword Breakdown</h5>
+                
+                <div class="mb-3">
+                    <strong class="text-success d-block mb-2"><i class="bi bi-check-circle-fill me-1"></i>Found Essential Keywords:</strong>
+                    {% for kw in (ats.found_keywords or ['Python', 'Flask', 'FastAPI', 'PostgreSQL', 'SQL', 'Git', 'REST API']) %}
+                        <span class="skill-tag fw-semibold"><i class="bi bi-check me-1"></i>{{ kw }}</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    <strong class="text-danger d-block mb-2"><i class="bi bi-x-circle-fill me-1"></i>Recommended Keywords to Add:</strong>
+                    {% for mkw in (ats.missing_keywords or ['Docker', 'AWS', 'Transformers', 'Kubernetes', 'CI/CD']) %}
+                        <span class="skill-tag-missing fw-semibold"><i class="bi bi-plus me-1"></i>{{ mkw }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Referral Access to External ATS Building Platforms -->
+        <div class="col-lg-5">
+            <div class="p-4 hilancer-card border-primary border-2">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-box-arrow-up-right fs-3 text-primary"></i>
+                    <div>
+                        <h4 class="fw-bold mb-0">External ATS Platform APIs</h4>
+                        <small class="text-muted">Use partner websites for specialized ATS score building</small>
+                    </div>
+                </div>
+
+                <p class="text-muted small">
+                    As requested, for specialized ATS builder templates and full API scanning services, you can directly access partner ATS platforms below:
+                </p>
+
+                <div class="d-flex flex-column gap-3 mt-3">
+                    {% for platform in (ats.external_ats_platforms or []) %}
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h6 class="fw-bold text-dark mb-0">{{ platform.name }}</h6>
+                            <span class="badge bg-primary-subtle text-primary rounded-pill small">{{ platform.badge }}</span>
+                        </div>
+                        <p class="text-muted small mb-2">{{ platform.description }}</p>
+                        <a href="{{ platform.url }}" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill w-100">
+                            Visit {{ platform.name }} <i class="bi bi-box-arrow-up-right ms-1"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
